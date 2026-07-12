@@ -1,41 +1,40 @@
 pipeline {
-    agent any
+
+    agent {
+        docker {
+            image 'python:3.12'
+            reuseNode true
+        }
+    }
 
     stages {
 
-       stage('Checkout') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/kingslayer458/digital_ocean.git'
+                git branch: 'main', url: 'https://github.com/kingslayer458/digital_ocean.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    python3 -m venv venv
-
+                    python -m venv venv
                     . venv/bin/activate
 
                     pip install --upgrade pip
-
                     pip install -r requirements.txt
                 '''
             }
         }
 
-        stage('Run DigitalOcean vm extractor') {
+        stage('Run DigitalOcean vms Extractor') {
             steps {
-
                 withCredentials([
                     string(credentialsId: 'digitalocean-token',
-                    variable: 'DIGITAL_OCEAN_TOKEN')])
-                    {
-
+                           variable: 'DIGITAL_OCEAN_TOKEN')]) {
                     sh '''
                         . venv/bin/activate
-
-                        python3 -u get_vms.py
+                        python -u get_vms.py
                     '''
                 }
             }
@@ -49,13 +48,12 @@ pipeline {
     }
 
     post {
-
         success {
-            echo 'DigitalOcean vms collected successfully.'
+            echo 'DigitalOcean VMs collected successfully.'
         }
 
         failure {
-            echo 'vm collection failed.'
+            echo 'VM collection failed.'
         }
 
         always {
