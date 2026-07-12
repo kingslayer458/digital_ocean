@@ -6,7 +6,7 @@ pipeline {
        stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/kinglsayer458/your-repository.git'
+                    url: 'https://github.com/kingslayer458/digital_ocean.git'
             }
         }
 
